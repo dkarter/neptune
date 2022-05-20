@@ -17,6 +17,16 @@ config :neptune, NeptuneWeb.Endpoint,
   pubsub_server: Neptune.PubSub,
   live_view: [signing_salt: "eN9kQLJA"]
 
+config :libcluster,
+  topologies: [
+    epmd_example: [
+      strategy: Elixir.Cluster.Strategy.Epmd,
+      config: [
+        hosts: [:"node4000@pop-os", :"node4001@pop-os"]
+      ]
+    ]
+  ]
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

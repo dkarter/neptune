@@ -65,3 +65,16 @@ You should now be able to visit the server in your browser on http://localhost:4
 docker stop neptune
 ```
 
+## Run more nodes
+
+Make sure config.exs has the right hostname and run in two different terminals:
+
+```bash
+MIX_ENV=prod PORT=4000 iex --sname node4000 -S mix phx.server
+```
+
+```bash
+MIX_ENV=prod PORT=4001 iex --sname node4001 -S mix phx.server
+```
+
+The nodes should automatically connect via libcluster
