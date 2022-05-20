@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-database
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+
+  serviceName: postgres-service
+
+  replicas: 1
+
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          volumeMounts:
+            - name: postgres-volume
+              mountPath: /var/lib/postgresql/data
+
+          env:
+            - name: POSTGRES_PASSWORD
+              value: mysecretpassword
+
+            - name: POSTGRES_DB
+              value: neptune_prod
+
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-volume
+      spec:
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 1Gi
