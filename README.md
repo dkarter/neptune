@@ -71,7 +71,15 @@ docker stop neptune
 
 ## Run more nodes
 
-Make sure config.exs has the right hostname and run in two different terminals:
+Make sure the `.hosts.erlang` file has the right hostname for your machine.
+
+Get the hostname this way:
+
+```bash
+hostname
+```
+
+Run in two different terminals:
 
 ```bash
 MIX_ENV=prod PORT=4000 iex --sname node4000 -S mix phx.server
@@ -81,4 +89,4 @@ MIX_ENV=prod PORT=4000 iex --sname node4000 -S mix phx.server
 MIX_ENV=prod PORT=4001 iex --sname node4001 -S mix phx.server
 ```
 
-The nodes should automatically connect via libcluster
+The nodes should automatically connect via libcluster :sparkles:

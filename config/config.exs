@@ -19,11 +19,22 @@ config :neptune, NeptuneWeb.Endpoint,
 
 config :libcluster,
   topologies: [
-    epmd_example: [
-      strategy: Elixir.Cluster.Strategy.Epmd,
-      config: [
-        hosts: [:"node4000@pop-os", :"node4001@pop-os"]
-      ]
+    # Using erlang port mapper and specifying the hosts
+    # epmd_example: [
+    #   strategy: Cluster.Strategy.Epmd,
+    #   config: [
+    #     hosts: [:"node4000@pop-os", :"node4001@pop-os"]
+    #   ]
+    # ],
+
+    # when all the nodes are on the same machine they can connect automatically
+    # local_epmd_example: [
+    #   strategy: Cluster.Strategy.LocalEpmd
+    # ],
+
+    # use .hosts.erlang to specify hosts
+    erlang_hosts_example: [
+      strategy: Cluster.Strategy.ErlangHosts
     ]
   ]
 
