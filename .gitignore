@@ -32,3 +32,5 @@ neptune-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# local secrets using Direnv
+.envrc
