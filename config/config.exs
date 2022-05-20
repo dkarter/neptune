@@ -17,26 +17,26 @@ config :neptune, NeptuneWeb.Endpoint,
   pubsub_server: Neptune.PubSub,
   live_view: [signing_salt: "eN9kQLJA"]
 
-config :libcluster,
-  topologies: [
-    # Using erlang port mapper and specifying the hosts
-    # epmd_example: [
-    #   strategy: Cluster.Strategy.Epmd,
-    #   config: [
-    #     hosts: [:"node4000@pop-os", :"node4001@pop-os"]
-    #   ]
-    # ],
+# config :libcluster,
+#   topologies: [
+#     # Using erlang port mapper and specifying the hosts
+#     # epmd_example: [
+#     #   strategy: Cluster.Strategy.Epmd,
+#     #   config: [
+#     #     hosts: [:"node4000@pop-os", :"node4001@pop-os"]
+#     #   ]
+#     # ],
 
-    # when all the nodes are on the same machine they can connect automatically
-    # local_epmd_example: [
-    #   strategy: Cluster.Strategy.LocalEpmd
-    # ],
+#     # when all the nodes are on the same machine they can connect automatically
+#     # local_epmd_example: [
+#     #   strategy: Cluster.Strategy.LocalEpmd
+#     # ],
 
-    # use .hosts.erlang to specify hosts
-    erlang_hosts_example: [
-      strategy: Cluster.Strategy.ErlangHosts
-    ]
-  ]
+#     # use .hosts.erlang to specify hosts
+#     # erlang_hosts_example: [
+#     #   strategy: Cluster.Strategy.ErlangHosts
+#     # ]
+#   ]
 
 # Configures the mailer
 #
