@@ -37,6 +37,12 @@ Check that it changed, and then enable it with:
 direnv allow
 ```
 
+### Build the Production Release
+
+```bash
+MIX_ENV=prod mix release --overwrite
+```
+
 ### Build Docker Image
 
 ```bash
