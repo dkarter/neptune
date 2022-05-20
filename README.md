@@ -1,5 +1,9 @@
 # Neptune
 
+Example Elixir Cluster on K8s
+
+![screenshot](./screenshot.png)
+
 ## Setup Instructions
 
 ## Set up the app for running it locally
