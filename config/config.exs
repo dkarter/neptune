@@ -37,6 +37,18 @@ config :neptune, NeptuneWeb.Endpoint,
 #     #   strategy: Cluster.Strategy.ErlangHosts
 #     # ]
 #   ]
+#
+
+config :libcluster,
+  topologies: [
+    k8s_example: [
+      strategy: Elixir.Cluster.Strategy.Kubernetes.DNS,
+      config: [
+        service: "neptune-headless",
+        application_name: "neptune"
+      ]
+    ]
+  ]
 
 # Configures the mailer
 #
