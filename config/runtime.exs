@@ -55,23 +55,6 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  magic_cookie =
-    System.get_env("LIBCLUSTER_COOKIE") ||
-      raise """
-      environment variable LIBCLUSTER_COOKIE is missing.
-      You can generate one by calling: mix phx.gen.secret
-      """
-
-  config :libcluster,
-    topologies: [
-      gossip_example: [
-        strategy: Cluster.Strategy.Gossip,
-        config: [
-          secret: magic_cookie
-        ]
-      ]
-    ]
-
   # ## Using releases
   #
   # If you are doing OTP releases, you need to instruct Phoenix
