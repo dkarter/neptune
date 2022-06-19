@@ -25,7 +25,10 @@ spec:
 
           env:
             - name: POSTGRES_PASSWORD
-              value: mysecretpassword
+              valueFrom:
+                secretKeyRef:
+                  name: neptune-secret
+                  key: database_password
 
             - name: POSTGRES_DB
               value: neptune_prod
