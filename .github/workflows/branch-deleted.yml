@@ -50,7 +50,7 @@ jobs:
       - name: Destroy Infra with Pulumi
         uses: pulumi/actions@v3
         with:
-          command: down
+          command: destroy
           stack-name: preview
           github-token: ${{ secrets.GITHUB_TOKEN }}
           work-dir: infra
