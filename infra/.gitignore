@@ -2,3 +2,4 @@
 /node_modules/
 
 kubeconfig.yml
+Pulumi.dev.yaml
