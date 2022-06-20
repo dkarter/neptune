@@ -179,3 +179,30 @@ Then use that IP to connect to the database via psql
 psql -U postgres -h 10.110.129.226
 ```
 
+
+# Deployment
+
+## Semi-Auto
+
+This project uses Pulumi to deploy the K8s cluster to DigitalOcean.
+
+First install Pulumi on your machine, then cd into the `infra` directory and set all the required secrets for the stack (dev):
+
+```bash
+pulumi config set --secret digitalocean:token <DO_API_TOKEN>
+pulumi config set domain example.com # make sure you have the nameservers pointed at digitalocean since this is how we manage the DNS
+pulumi config set subdomain k8s # can be anything
+pulumi config set --secret database_password <pass>
+pulumi config set --secret database_url 'ecto://<user>:<pass>@postgres-service/neptune_prod'
+pulumi config set --secret secret_key_base '<generate via mix phx.gen.secret>'
+```
+
+Then run
+
+```bash
+pulumi up
+```
+
+## Full Auto (Continuous Deployment + Preview Envs)
+
+Coming soon...!
