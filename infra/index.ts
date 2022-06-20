@@ -10,9 +10,11 @@ const secret_key_base = config.requireSecret('secret_key_base');
 const domainName = config.require('domain');
 const subdomain = config.require('subdomain');
 
-const domain = new digitalocean.Domain(domainName, {
-  name: domainName,
-});
+if (pulumi.getStack() === 'dev') {
+  new digitalocean.Domain(domainName, {
+    name: domainName,
+  });
+}
 
 const kubeVersions = digitalocean.getKubernetesVersions();
 const cluster = new digitalocean.KubernetesCluster('do-cluster', {
@@ -142,8 +144,10 @@ const app = new kubernetes.apps.v1.Deployment(
           containers: [
             {
               name: 'neptune',
-              // TODO: interpolate the tag from git sha?
-              image: 'dkarter/neptune:1.2',
+              image:
+                pulumi.getStack() === 'dev'
+                  ? 'dkarter/neptune:1.2'
+                  : `dkarter/neptune:sha-${config.get('git_sha')?.slice(0, 7)}`,
               env: [
                 {
                   name: 'SECRET_KEY_BASE',
@@ -217,7 +221,7 @@ export const ingressIp = appService.status.loadBalancer.ingress[0].ip;
 new digitalocean.DnsRecord(subdomain, {
   name: subdomain,
   type: 'A',
-  domain: domain.name,
+  domain: domainName,
   value: ingressIp,
 });
 
