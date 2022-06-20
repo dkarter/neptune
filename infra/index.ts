@@ -220,3 +220,6 @@ new digitalocean.DnsRecord(subdomain, {
   domain: domain.name,
   value: ingressIp,
 });
+
+export const hostname = `${subdomain}.${domainName}`;
+export const url = `http://${hostname}`;
