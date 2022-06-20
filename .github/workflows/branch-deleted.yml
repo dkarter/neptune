@@ -1,0 +1,60 @@
+name: Destroy Preview Environment
+
+on: [delete]
+
+jobs:
+  destroy-preview:
+    name: Destroy Preview Environment
+
+    runs-on: ubuntu-latest
+    needs: [docker-build]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Deps
+        working-directory: infra
+        run: yarn install
+
+      - name: Configure Pulumi Stack
+        working-directory: infra
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        run: |
+          # TODO: stack name should be branch specific to allow separate testing
+          # environments per PR, but that could limit the characters we can use
+          # in branch names
+          pulumi stack select --create preview
+
+          pulumi config set domain 'console.lol'
+          # this will only work in pull requests.. need to use something
+          # different for production deploy. Also because this is going to be
+          # the branch name, we would have to limit it to something that is
+          # allowed in subdomains
+          pulumi config set subdomain '${{ github.head_ref }}'
+          pulumi config set git_sha '${{ github.sha }}'
+
+          # set config secrets
+          pulumi config set --secret digitalocean:token '${{ secrets.DO_API_TOKEN }}'
+          pulumi config set --secret database_password '${{ secrets.DATABASE_PASSWORD }}'
+          pulumi config set --secret database_url '${{ secrets.DATABASE_URL }}'
+          pulumi config set --secret secret_key_base '${{ secrets.SECRET_KEY_BASE }}'
+
+      - name: Destroy Infra with Pulumi
+        uses: pulumi/actions@v3
+        with:
+          command: down
+          stack-name: preview
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          work-dir: infra
+          upsert: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
