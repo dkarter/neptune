@@ -5,15 +5,13 @@ import * as kubernetes from '@pulumi/kubernetes';
 const config = new pulumi.Config();
 const database_password = config.requireSecret('database_password');
 const database_url = config.requireSecret('database_url');
-const subdomain = config.require('subdomain');
 const secret_key_base = config.requireSecret('secret_key_base');
 
-if (!database_password || !database_url || !subdomain || !secret_key_base) {
-  throw new Error('Please set all configuration values!');
-}
+const domainName = config.require('domain');
+const subdomain = config.require('subdomain');
 
-const domain = new digitalocean.Domain('console.lol', {
-  name: 'console.lol',
+const domain = new digitalocean.Domain(domainName, {
+  name: domainName,
 });
 
 const kubeVersions = digitalocean.getKubernetesVersions();
