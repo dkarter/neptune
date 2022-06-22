@@ -8,6 +8,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    if: github.event.ref_type == 'branch'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -34,12 +36,9 @@ jobs:
           pulumi stack select --create preview
 
           pulumi config set domain 'console.lol'
-          # this will only work in pull requests.. need to use something
-          # different for production deploy. Also because this is going to be
-          # the branch name, we would have to limit it to something that is
-          # allowed in subdomains
-          pulumi config set subdomain '${{ github.head_ref }}'
-          pulumi config set git_sha '${{ github.sha }}'
+
+          # this is the branch name that triggered the delete event
+          pulumi config set subdomain '${{ github.event.ref }}'
 
           # set config secrets
           pulumi config set --secret digitalocean:token '${{ secrets.DO_API_TOKEN }}'
