@@ -25,20 +25,29 @@ jobs:
         working-directory: infra
         run: yarn install
 
+      # Use branch name to create a human friendly code name.
+      # This will allow using something like 'feature/something-very-long' as a
+      # branch name and not have to worry about the subdomain or Pulumi stack
+      # name having invalid characters, and at the same time maintain a
+      # consistent reference we can use to spin down the environment when the PR
+      # is merged
+      - name: Generate codename
+        id: codeName
+        uses: reallyreallyreal/codenamize-action@v1.1.0
+        with:
+          # this is the branch name that triggered the delete event
+          seed: '${{ github.event.ref }}'
+
       - name: Configure Pulumi Stack
         working-directory: infra
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         run: |
-          # TODO: stack name should be branch specific to allow separate testing
-          # environments per PR, but that could limit the characters we can use
-          # in branch names
-          pulumi stack select --create preview
+          pulumi stack select --create 'preview-${{ steps.codeName.outputs.codename }}'
 
           pulumi config set domain 'console.lol'
 
-          # this is the branch name that triggered the delete event
-          pulumi config set subdomain '${{ github.event.ref }}'
+          pulumi config set subdomain '${{ steps.codeName.outputs.codename }}'
 
           # set config secrets
           pulumi config set --secret digitalocean:token '${{ secrets.DO_API_TOKEN }}'
@@ -50,7 +59,7 @@ jobs:
         uses: pulumi/actions@v3
         with:
           command: destroy
-          stack-name: preview
+          stack-name: 'preview-${{ steps.codeName.outputs.codename }}'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           work-dir: infra
           upsert: true
