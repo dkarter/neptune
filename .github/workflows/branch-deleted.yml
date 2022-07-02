@@ -1,6 +1,8 @@
 name: Destroy Preview Environment
 
-on: [delete]
+on:
+  pull_request:
+    types: [closed, unlabeled]
 
 jobs:
   destroy-preview:
@@ -8,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: github.event.ref_type == 'branch'
+    if: github.event.pull_request.closed == true || github.event.label.name == 'Deploy'
 
     steps:
       - name: Checkout code
@@ -35,8 +37,8 @@ jobs:
         id: codeName
         uses: reallyreallyreal/codenamize-action@v1.1.0
         with:
-          # this is the branch name that triggered the delete event
-          seed: '${{ github.event.ref }}'
+          # this is the branch name for the PR
+          seed: '${{ github.head_ref }}'
 
       - name: Configure Pulumi Stack
         working-directory: infra

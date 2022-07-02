@@ -2,11 +2,14 @@ name: CI / CD
 
 on:
   pull_request:
-    branches: ['master']
+    types: [labeled]
 
 jobs:
   docker-build:
     name: Build & Push Docker Image
+
+    # only deploy if PR has a 'Deploy' label
+    if: ${{ github.event.label.name == 'Deploy' }}
 
     runs-on: ubuntu-latest
 
@@ -43,6 +46,9 @@ jobs:
     name: Deploy Preview
 
     runs-on: ubuntu-latest
+
+    # only deploy if PR has a 'Deploy' label
+    if: ${{ github.event.label.name == 'Deploy' }}
     needs: [docker-build]
 
     steps:
