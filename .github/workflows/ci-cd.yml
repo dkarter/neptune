@@ -74,30 +74,34 @@ jobs:
           seed: '${{ github.head_ref }}'
 
       - name: Configure Pulumi Stack
-        working-directory: infra
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-        run: |
-          pulumi stack select --create 'preview-${{ steps.codeName.outputs.codename }}'
-
-          pulumi config set domain 'console.lol'
-          pulumi config set subdomain '${{ steps.codeName.outputs.codename }}'
-          pulumi config set git_sha '${{ github.sha }}'
-
-          # set config secrets
-          pulumi config set --secret digitalocean:token '${{ secrets.DO_API_TOKEN }}'
-          pulumi config set --secret database_password '${{ secrets.DATABASE_PASSWORD }}'
-          pulumi config set --secret database_url '${{ secrets.DATABASE_URL }}'
-          pulumi config set --secret secret_key_base '${{ secrets.SECRET_KEY_BASE }}'
+        uses: ./.github/actions/setup-pulumi
+        with:
+          pulumi-access-token: '${{ secrets.PULUMI_ACCESS_TOKEN }}'
+          domain: 'console.lol'
+          subdomain: '${{ steps.codeName.outputs.codename }}'
+          stack-name: 'preview-${{ steps.codeName.outputs.codename }}'
+          docker-tag-git-sha: '${{ github.sha }}'
+          digitalocean-token: '${{ secrets.DO_API_TOKEN }}'
+          database_password: '${{ secrets.DATABASE_PASSWORD }}'
+          database_url: '${{ secrets.DATABASE_URL }}'
+          secret_key_base: '${{ secrets.SECRET_KEY_BASE }}'
 
       - name: Deploy with Pulumi
         uses: pulumi/actions@v3
         with:
           command: up
           stack-name: 'preview-${{ steps.codeName.outputs.codename }}'
-          comment-on-pr: true
+          comment-on-pr: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           work-dir: infra
           upsert: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Update Deployment Status Comment - Success!
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            :ship: Deployed Preview to <http://${{ steps.codeName.outputs.codename }}.console.lol>
+
+            > Latest deployed commit ${{ github.sha }}
