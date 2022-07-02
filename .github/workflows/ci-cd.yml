@@ -95,9 +95,17 @@ jobs:
         with:
           command: up
           stack-name: 'preview-${{ steps.codeName.outputs.codename }}'
-          comment-on-pr: true
+          comment-on-pr: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           work-dir: infra
           upsert: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Update Deployment Status Comment - Success!
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            :ship: Deployed Preview to <http://${{ steps.codeName.outputs.codename }}.console.lol>
+
+            > Latest deployed commit ${{ github.sha }}
