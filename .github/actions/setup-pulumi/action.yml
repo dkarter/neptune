@@ -1,0 +1,60 @@
+name: 'Setup Pulumi'
+description: |
+  Creates a stack and sets all the necessary configuration values
+
+inputs:
+  domain:
+    description: 'Domain to deploy the environment to'
+    required: true
+
+  subdomain:
+    description: 'Subdomain to deploy the environment to'
+    required: true
+
+  stack-name:
+    description: 'Pulumi stack (essentially an environment)'
+    required: true
+
+  pulumi-access-token:
+    description: 'Pulumi API access token'
+    required: true
+
+  docker-tag-git-sha:
+    description: 'Git SHA used for tagging the docker image'
+    required: true
+
+  digitalocean-token:
+    description: 'Digital Ocean API token'
+    required: true
+
+  database_password:
+    description: 'Password for creating the database'
+    required: true
+
+  database_url:
+    description: 'Database URL the app will use to connect to the DB'
+    required: true
+
+  secret_key_base:
+    description: 'Secret keybase used when singing cookies and tokens in the app'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure Pulumi Stack
+      shell: bash
+      working-directory: infra
+      run: |
+        export PULUMI_ACCESS_TOKEN='${{ inputs.pulumi-access-token }}'
+        pulumi stack select --create '${{ inputs.stack-name }}'
+
+        pulumi config set domain '${{ inputs.domain }}'
+        pulumi config set subdomain '${{ inputs.subdomain }}'
+        pulumi config set git_sha '${{ inputs.docker-tag-git-sha }}'
+
+        # set config secrets
+        pulumi config set --secret digitalocean:token '${{ inputs.digitalocean-token }}'
+        pulumi config set --secret database_password '${{ inputs.database_password }}'
+        pulumi config set --secret database_url '${{ inputs.database_url }}'
+        pulumi config set --secret secret_key_base '${{ inputs.secret_key_base }}'
