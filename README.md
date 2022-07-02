@@ -7,8 +7,9 @@
 </p>
 
 <p align="center">
-  <h3>Neptune</h3>
-  <h5>Example Elixir Cluster on K8s</h5>
+  <b>Neptune</b>
+  <br />
+  Example Elixir Cluster on K8s
 </p>
 
 ![screenshot](./screenshot.png)
