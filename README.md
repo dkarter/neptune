@@ -1,4 +1,7 @@
+<center>
+![](./assets/images/logo.svg)
 # Neptune
+</center>
 
 Example Elixir Cluster on K8s
 
