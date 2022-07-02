@@ -215,4 +215,61 @@ pulumi up
 
 ## Full Auto (Continuous Deployment + Preview Envs)
 
+### Preview Envs
+
+Every PR gets its own preview environment on an entirely separate cluster, which
+is deployed to dedicated subdomain. This allows testing changes in isolation and
+significantly streamlines the steps a developer has to make to get from code change to UAT and subsequently to production.
+
+The subdomain is generated based on the branch name using
+[codenamize.js](https://github.com/stemail23/codenamize-js). This allows using
+any branch name including names that are not subdomain friendly such as
+`feature/do-a-thing`.
+
+The generated subdomain will look something like this
+`http://vengeful-professor.console.lol`
+
+### Production Deploy
 Coming soon...!
+
+# TODO
+This project achieved its main goal of demonstrating how to create Preview Envs
+for PRs such as the ones popularized by Heroku, Render, Netlify, Vercel etc... But do it with Kubernetes as part of the CI/CD workflow.
+
+I intend to continue to iterate on this and make it a template for future
+projects requiring hand rolled infrastructure (e.g. massive scale). Also this
+serves as a great learning opportunity for Elixir clustering and work
+distribution/state sharing in a cluster.
+
+There are a few more optimizations I am still working on
+## Must Have
+- [ ] Production deploy to canonical domain console.lol
+  - Currently production deploys are not automated via CD (but can be deployed
+    from the commandline using Pulumi)
+
+## Optimizations (Nice to have)
+- [ ] Single staging cluster with namespaces for preview envs
+  - Potentially save money (since each 2 node cluster is ~$24, not including
+    load balancer and volumes)
+  - Potentially speed up initial deploy time
+  - Could be a rabbit hole though
+- [ ] Use labels to trigger build on PRs (e.g. Deploy label)
+  - [ ] label removal should destroy the environment
+- [ ] Change the destroy env workflow to be triggered only by closed PRs (with
+      the labels)
+  - To avoid workflow failures when non PR branches are closed
+- [ ] separate secrets for production and staging (perhaps use a stack file as a
+      template so there's less to define and use the "copy from" flag when running
+      `pulumi stack create`)
+- [ ] break Pulumi file into smaller files
+- [ ] attempt to re-use k8s yaml folder
+  - [ ] will require passing the docker image tag as a variable
+- [ ] automatically delete volumes for preview environments
+  - the volumes are created by the stateful set automatically, but are not
+    destroyed when the environment is spun down. Maybe there's a way to create
+    the volume via Pulumi and attach it to the cluster — this way it will get
+    deleted on destroy
+
+## Learning opportunities
+- [ ] Cluster Dynamic Supervisor with Horde
+- [ ] Distributed Task Supervisor for spreading work across the cluster
