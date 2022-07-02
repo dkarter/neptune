@@ -1,9 +1,16 @@
-<center>
-![](./assets/images/logo.svg)
-# Neptune
-</center>
+<p align="center">
+  <img
+    src="./assets/images/logo.svg"
+    alt="Neptune Logo"
+    width="220"
+  />
+</p>
 
-Example Elixir Cluster on K8s
+<p align="center">
+  <b>:cloud: Neptune :cloud:</b>
+  <br />
+  Example Elixir Cluster on K8s
+</p>
 
 ![screenshot](./screenshot.png)
 
