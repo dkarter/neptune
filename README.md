@@ -246,6 +246,8 @@ There are a few more optimizations I am still working on
 - [ ] Production deploy to canonical domain console.lol
   - Currently production deploys are not automated via CD (but can be deployed
     from the commandline using Pulumi)
+- [ ] automatic SSL cert for the load balancer (via Digital Ocean annotations on the k8s config)
+  - https://docs.digitalocean.com/products/kubernetes/how-to/configure-load-balancers/
 
 ## Optimizations (Nice to have)
 - [ ] Single staging cluster with namespaces for preview envs
