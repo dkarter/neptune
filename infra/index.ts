@@ -190,11 +190,25 @@ const appService = new kubernetes.core.v1.Service(
   {
     metadata: {
       name: 'neptune-service',
+      annotations: {
+        // ['service.beta.kubernetes.io/do-loadbalancer-tls-passthrough']: 'true',
+        ['service.beta.kubernetes.io/do-loadbalancer-certificate-id']: `${subdomain}-cert`,
+        ['service.beta.kubernetes.io/do-loadbalancer-protocol']: 'https',
+        ['service.beta.kubernetes.io/do-loadbalancer-tls-ports']: '443',
+        ['service.beta.kubernetes.io/do-loadbalancer-disable-lets-encrypt-dns-records']:
+          'false',
+        // ['service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https']:
+        //   'true',
+        ['service.beta.kubernetes.io/do-loadbalancer-name']: `${subdomain}-lb`,
+      },
     },
     spec: {
       type: 'LoadBalancer',
       selector: app.spec.template.metadata.labels,
-      ports: [{ port: 80, targetPort: 4000 }],
+      ports: [
+        { name: 'http', port: 80, targetPort: 4000 },
+        { name: 'https', port: 443, targetPort: 4000 },
+      ],
     },
   },
   { provider }
