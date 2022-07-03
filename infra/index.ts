@@ -17,11 +17,14 @@ if (pulumi.getStack() === 'dev') {
 }
 
 const kubeVersions = digitalocean.getKubernetesVersions();
-const cluster = new digitalocean.KubernetesCluster('do-cluster', {
+const cluster = new digitalocean.KubernetesCluster('neptune-cluster', {
   region: digitalocean.Region.NYC1,
-  version: kubeVersions.then((versions) => versions.latestVersion),
+  version: kubeVersions.then(
+    (versions: digitalocean.GetKubernetesVersionsResult): string =>
+      versions.latestVersion
+  ),
   nodePool: {
-    name: 'default',
+    name: 'neptune-np-default',
     size: digitalocean.DropletSlug.DropletS1VCPU2GB,
     nodeCount: 2,
   },
@@ -191,14 +194,13 @@ const appService = new kubernetes.core.v1.Service(
     metadata: {
       name: 'neptune-service',
       annotations: {
-        // ['service.beta.kubernetes.io/do-loadbalancer-tls-passthrough']: 'true',
         ['service.beta.kubernetes.io/do-loadbalancer-certificate-id']: `${subdomain}-cert`,
         ['service.beta.kubernetes.io/do-loadbalancer-protocol']: 'https',
         ['service.beta.kubernetes.io/do-loadbalancer-tls-ports']: '443',
         ['service.beta.kubernetes.io/do-loadbalancer-disable-lets-encrypt-dns-records']:
           'false',
-        // ['service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https']:
-        //   'true',
+        ['service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https']:
+          'true',
         ['service.beta.kubernetes.io/do-loadbalancer-name']: `${subdomain}-lb`,
       },
     },
